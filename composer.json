@@ -1,0 +1,27 @@
+{
+    "name": "filsh/yii2-gearman",
+    "description": "Gearman handler for PHP",
+    "keywords": ["yii", "extension"],
+    "homepage": "https://github.com/filsh/yii2-gearman",
+    "type": "yii2-extension",
+    "license": "MIT",
+    "support": {
+        "email": "imaliy.filsh@gmail.com",
+        "source": "https://github.com/filsh/yii2-gearman"
+    },
+    "authors": [
+        {
+            "name": "Igor Maliy",
+            "email": "imaliy.filsh@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+        "gabrielbull/gearman-handler": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "filsh\\yii2\\gearman\\": ""
+        }
+    }
+}
