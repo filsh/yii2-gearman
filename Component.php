@@ -2,51 +2,104 @@
 
 namespace filsh\yii2\gearman;
 
-use GearmanHandler\Application;
-use GearmanHandler\Worker;
-use GearmanHandler\Config;
+use Yii;
+use Sinergi\Gearman\Application;
+use Sinergi\Gearman\Dispatcher;
+use Sinergi\Gearman\Config;
+use Sinergi\Gearman\Process;
 
 class Component extends \yii\base\Component
 {
     public $servers;
     
-    public $workers;
+    public $user;
     
     public $jobs = [];
     
-    private $_server;
+    private $_application;
     
-    private $_worker;
+    private $_dispatcher;
     
-    public function getServer()
+    private $_config;
+    
+    private $_process;
+    
+    public function getApplication()
     {
-        if($this->_server === null) {
-            $config = $this->createConfig($this->servers);
-            $this->_server = new Application($config);
+        if($this->_application === null) {
+            $app = new Application($this->getConfig(), $this->getProcess());
+            foreach($this->jobs as $name => $job) {
+                $job = Yii::createObject($job);
+                if(!($job instanceof JobInterface)) {
+                    throw new \yii\base\InvalidConfigException('Gearman job must be instance of JobInterface.');
+                }
+                
+                $job->setName($name);
+                $app->add($job);
+            }
+            $this->_application = $app;
         }
         
-        return $this->_server;
+        return $this->_application;
     }
     
-    public function getWorker()
+    public function getDispatcher()
     {
-        if($this->_worker === null) {
-            $config = $this->createConfig($this->workers);
-            $this->_worker = new Worker($config);
+        if($this->_dispatcher === null) {
+            $this->_dispatcher = new Dispatcher($this->getConfig());
         }
         
-        return $this->_worker;
+        return $this->_dispatcher;
     }
     
-    protected function createConfig(array $config)
+    public function getConfig()
     {
-        if(!isset($config['host']) || !isset($config['port'])) {
-            throw new \yii\base\InvalidConfigException('Invalid config configuration.');
+        if($this->_config === null) {
+            $servers = [];
+            foreach($this->servers as $server) {
+                if(is_array($server) && isset($server['host'], $server['port'])) {
+                    $servers[] = implode(Config::SERVER_PORT_SEPARATOR, [$server['host'], $server['port']]);
+                } else {
+                    $servers[] = $server;
+                }
+            }
+
+            $this->_config = new Config([
+                'servers' => $servers,
+                'user' => $this->user
+            ]);
         }
         
-        return new Config([
-            'gearmanHost' => $config['host'],
-            'gearmanPort' => $config['port']
-        ]);
+        return $this->_config;
+    }
+    
+    public function setConfig(Config $config)
+    {
+        $this->_config = $config;
+        return $this;
+    }
+    
+    /**
+     * @return Process
+     */
+    protected function getProcess()
+    {
+        if ($this->_process === null) {
+            $this->setProcess((new Process($this->getConfig())));
+        }
+        return $this->_process;
+    }
+    
+    /**
+     * @param Process $process
+     * @return $this
+     */
+    public function setProcess(Process $process)
+    {
+        if ($this->getConfig() === null && $process->getConfig() instanceof Config) {
+            $this->setConfig($process->getConfig());
+        }
+        $this->_process = $process;
+        return $this;
     }
 }
