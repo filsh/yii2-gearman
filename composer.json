@@ -17,7 +17,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "gabrielbull/gearman-handler": "*"
+        "sinergi/gearman": "dev-master"
     },
     "autoload": {
         "psr-4": {
