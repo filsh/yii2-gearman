@@ -2,7 +2,7 @@
 
 namespace filsh\yii2\gearman;
 
-abstract class JobBase implements JobInterface
+abstract class JobBase extends \yii\base\Component implements JobInterface
 {
     protected $name;
     
