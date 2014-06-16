@@ -71,6 +71,10 @@ yii gearman/stop // stop workers
 ## Example using Dispatcher
 
 ```php
-Yii::$app->gearman->getDispatcher()->background('syncCalendar', ['data' => 'value']); // run in background
+Yii::$app->gearman->getDispatcher()->background('syncCalendar', new JobWorkload([
+    'params' => [
+        'data' => 'value'
+    ]
+])); // run in background
 Yii::$app->gearman->getDispatcher()->execute('syncCalendar', ['data' => 'value']); // run synchronize
 ```
