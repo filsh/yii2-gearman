@@ -8,7 +8,7 @@ use Sinergi\Gearman\Dispatcher;
 use Sinergi\Gearman\Config;
 use Sinergi\Gearman\Process;
 
-class Component extends \yii\base\Component
+class GearmanComponent extends \yii\base\Component
 {
     public $servers;
     
@@ -82,7 +82,7 @@ class Component extends \yii\base\Component
     /**
      * @return Process
      */
-    protected function getProcess()
+    public function getProcess()
     {
         if ($this->_process === null) {
             $this->setProcess((new Process($this->getConfig())));
