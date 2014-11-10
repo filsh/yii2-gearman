@@ -23,7 +23,7 @@ class GearmanController extends Controller
         $process = $app->getProcess();
         
         if ($process->isRunning()) {
-            $this->stdout("Failed: Process is already runnning\n", Console::FG_RED);
+            $this->stdout("Failed: Process is already running\n", Console::FG_RED);
             return;
         }
         
@@ -50,7 +50,7 @@ class GearmanController extends Controller
         $process = $app->getProcess();
         
         if (!$process->isRunning()) {
-            $this->stdout("Failed: Process is not runnning\n", Console::FG_RED);
+            $this->stdout("Failed: Process is not running\n", Console::FG_RED);
             return;
         }
         
