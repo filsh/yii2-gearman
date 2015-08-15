@@ -17,7 +17,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "sinergi/gearman": "dev-master"
+        "sinergi/gearman": "*"
     },
     "autoload": {
         "psr-4": {
