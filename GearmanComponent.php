@@ -11,19 +11,23 @@ use Sinergi\Gearman\Process;
 class GearmanComponent extends \yii\base\Component
 {
     public $servers;
-    
+
     public $user;
-    
+
     public $jobs = [];
-    
+
     private $_application;
-    
+
     private $_dispatcher;
-    
+
     private $_config;
-    
+
     private $_process;
-    
+
+    /**
+     * @return Application
+     * @throws \yii\base\InvalidConfigException
+     */
     public function getApplication()
     {
         if($this->_application === null) {
@@ -33,25 +37,31 @@ class GearmanComponent extends \yii\base\Component
                 if(!($job instanceof JobInterface)) {
                     throw new \yii\base\InvalidConfigException('Gearman job must be instance of JobInterface.');
                 }
-                
+
                 $job->setName($name);
                 $app->add($job);
             }
             $this->_application = $app;
         }
-        
+
         return $this->_application;
     }
-    
+
+    /**
+     * @return Dispatcher
+     */
     public function getDispatcher()
     {
         if($this->_dispatcher === null) {
             $this->_dispatcher = new Dispatcher($this->getConfig());
         }
-        
+
         return $this->_dispatcher;
     }
-    
+
+    /**
+     * @return Config
+     */
     public function getConfig()
     {
         if($this->_config === null) {
@@ -69,16 +79,20 @@ class GearmanComponent extends \yii\base\Component
                 'user' => $this->user
             ]);
         }
-        
+
         return $this->_config;
     }
-    
+
+    /**
+     * @param Config $config
+     * @return $this
+     */
     public function setConfig(Config $config)
     {
         $this->_config = $config;
         return $this;
     }
-    
+
     /**
      * @return Process
      */
@@ -89,7 +103,7 @@ class GearmanComponent extends \yii\base\Component
         }
         return $this->_process;
     }
-    
+
     /**
      * @param Process $process
      * @return $this
@@ -101,5 +115,29 @@ class GearmanComponent extends \yii\base\Component
         }
         $this->_process = $process;
         return $this;
+    }
+
+    /**
+     * @param $name
+     * @param array $params
+     * @param int $priority
+     * @return string
+     */
+    public function background($name, $params = [], $priority = Dispatcher::NORMAL)
+    {
+        return $this->getDispatcher()->background($name, new JobWorkload([
+            'params' => $params
+        ]), $priority);
+    }
+
+    /**
+     * @param $name
+     * @param array $params
+     * @param int $priority
+     * @return mixed
+     */
+    public function execute($name, $params = [], $priority = Dispatcher::NORMAL)
+    {
+        return $this->getDispatcher()->execute($name, $params, $priority);
     }
 }
