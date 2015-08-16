@@ -14,6 +14,16 @@ class GearmanComponent extends \yii\base\Component
 
     public $user;
 
+    /**
+     * @var string
+     */
+    public $jobPath = '@app/jobs';
+
+    /**
+     * @var string
+     */
+    public $jobNameSpace = 'app\jobs';
+
     public $jobs = [];
 
     private $_application;
@@ -32,7 +42,7 @@ class GearmanComponent extends \yii\base\Component
     {
         if($this->_application === null) {
             $app = new Application($this->getConfig(), $this->getProcess());
-            foreach($this->jobs as $name => $job) {
+            foreach($this->getJobs() as $name => $job) {
                 $job = Yii::createObject($job);
                 if(!($job instanceof JobInterface)) {
                     throw new \yii\base\InvalidConfigException('Gearman job must be instance of JobInterface.');
@@ -139,5 +149,34 @@ class GearmanComponent extends \yii\base\Component
     public function execute($name, $params = [], $priority = Dispatcher::NORMAL)
     {
         return $this->getDispatcher()->execute($name, $params, $priority);
+    }
+
+    /**
+     * @return array
+     * @throws \yii\base\ErrorException
+     */
+    public function getJobs()
+    {
+        $dir = Yii::getAlias($this->jobPath);
+
+        if (!is_readable($dir)) {
+            throw new \yii\base\ErrorException("Job directory ($dir) does not exist");
+        }
+
+        $files = array_diff(scandir($dir), array('..', '.'));
+
+        foreach ($files as $fileName) {
+            // strip out the file extension to derive the class name
+            $className = preg_replace('/\.[^.]*$/', '', $fileName);
+
+            // validate class name
+            if (preg_match('/^[a-zA-Z0-9_]*$/', $className)) {
+                $this->jobs[$className] = [
+                    'class' => implode('\\', [$this->jobNameSpace, $className])
+                ];
+            }
+        }
+
+        return $this->jobs;
     }
 }
