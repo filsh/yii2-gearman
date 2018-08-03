@@ -21,7 +21,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "websightnl/gearman": "~1.0"
+        "websightnl/gearman": "~1.1"
     },
     "autoload": {
         "psr-4": {
