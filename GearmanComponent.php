@@ -13,6 +13,8 @@ class GearmanComponent extends \yii\base\Component
     public $servers;
     
     public $user;
+
+    public $loopTimeout = 10;
     
     public $jobs = [];
     
@@ -66,7 +68,8 @@ class GearmanComponent extends \yii\base\Component
 
             $this->_config = new Config([
                 'servers' => $servers,
-                'user' => $this->user
+                'user' => $this->user,
+                'loopTimeout' => $this->$loopTimeout,
             ]);
         }
         

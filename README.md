@@ -1,7 +1,7 @@
 yii2-gearman
 ============
 
-  A wrapper for https://github.com/sinergi/gearman
+  A wrapper for https://github.com/websigtnl/gearman
   Thanks for Gabriel Bull
 
 ## Installation
@@ -25,6 +25,7 @@ It is recommended that you install the Gearman library [through composer](http:/
       'servers' => [
           ['host' => '127.0.0.1', 'port' => 4730],
       ],
+      'loopTimeout' => 1000,
       'user' => 'www-data',
       'jobs' => [
           'syncCalendar' => [
