@@ -69,7 +69,7 @@ class GearmanComponent extends \yii\base\Component
             $this->_config = new Config([
                 'servers' => $servers,
                 'user' => $this->user,
-                'loopTimeout' => $this->$loopTimeout,
+                'loopTimeout' => $this->loopTimeout,
             ]);
         }
         
