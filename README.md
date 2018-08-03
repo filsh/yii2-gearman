@@ -1,7 +1,7 @@
 yii2-gearman
 ============
 
-  A wrapper for https://github.com/websigtnl/gearman
+  A wrapper for https://github.com/websightnl/gearman
   Thanks for Gabriel Bull
 
 ## Installation
