@@ -11,48 +11,50 @@ use Sinergi\Gearman\Process;
 class GearmanComponent extends \yii\base\Component
 {
     public $servers;
-    
+
     public $user;
-    
+
+    public $loopTimeout = 10;
+
     public $jobs = [];
-    
+
     private $_application;
-    
+
     private $_dispatcher;
-    
+
     private $_config;
-    
+
     private $_process;
-    
-    public function getApplication()
+
+    public function getApplication($procNum = 0)
     {
         if($this->_application === null) {
-            $app = new Application($this->getConfig(), $this->getProcess());
+            $app = new Application($this->getConfig($procNum), $this->getProcess());
             foreach($this->jobs as $name => $job) {
                 $job = Yii::createObject($job);
                 if(!($job instanceof JobInterface)) {
                     throw new \yii\base\InvalidConfigException('Gearman job must be instance of JobInterface.');
                 }
-                
+
                 $job->setName($name);
                 $app->add($job);
             }
             $this->_application = $app;
         }
-        
+
         return $this->_application;
     }
-    
+
     public function getDispatcher()
     {
         if($this->_dispatcher === null) {
             $this->_dispatcher = new Dispatcher($this->getConfig());
         }
-        
+
         return $this->_dispatcher;
     }
-    
-    public function getConfig()
+
+    public function getConfig($procNum = 0)
     {
         if($this->_config === null) {
             $servers = [];
@@ -66,19 +68,30 @@ class GearmanComponent extends \yii\base\Component
 
             $this->_config = new Config([
                 'servers' => $servers,
-                'user' => $this->user
+                'user' => $this->user,
+                'loopTimeout' => $this->loopTimeout,
             ]);
+
+            if ($procNum !== 0) {
+                $this->_config->setLockFilename($this->addProcNumSuffix($this->_config->getLockFilename(), $procNum));
+                $this->_config->setPidFilename($this->addProcNumSuffix($this->_config->getPidFilename(), $procNum));
+            }
         }
-        
+
         return $this->_config;
     }
-    
+
+    protected function addProcNumSuffix($str, $procNum)
+    {
+        return preg_replace('/\./', '-' . $procNum .'.', $str, 1);
+    }
+
     public function setConfig(Config $config)
     {
         $this->_config = $config;
         return $this;
     }
-    
+
     /**
      * @return Process
      */
@@ -89,7 +102,7 @@ class GearmanComponent extends \yii\base\Component
         }
         return $this->_process;
     }
-    
+
     /**
      * @param Process $process
      * @return $this

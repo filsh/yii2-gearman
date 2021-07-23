@@ -1,23 +1,27 @@
 {
-    "name": "filsh/yii2-gearman",
+    "name": "websightnl/yii2-gearman",
     "description": "Gearman handler for PHP",
     "keywords": ["yii", "extension"],
-    "homepage": "https://github.com/filsh/yii2-gearman",
+    "homepage": "https://github.com/websightnl/yii2-gearman",
     "type": "yii2-extension",
     "license": "MIT",
     "support": {
-        "email": "imaliy.filsh@gmail.com",
-        "source": "https://github.com/filsh/yii2-gearman"
+        "email": "support@websight.nl",
+        "source": "https://github.com/websightnl/yii2-gearman"
     },
     "authors": [
         {
+            "name": "Eric Bus",
+            "email": "eric.bus@websight.nl"
+        },
+		{
             "name": "Igor Maliy",
             "email": "imaliy.filsh@gmail.com"
         }
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "sinergi/gearman": "dev-master"
+        "websightnl/gearman": "~1.1"
     },
     "autoload": {
         "psr-4": {

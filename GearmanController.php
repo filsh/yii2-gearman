@@ -14,46 +14,46 @@ class GearmanController extends Controller
      * @var boolean whether to run the forked process.
      */
     public $fork = false;
-    
+
     public $gearmanComponent = 'gearman';
-    
-    public function actionStart()
+
+    public function actionStart($procNum = 0)
     {
-        $app = $this->getApplication();
+        $app = $this->getApplication($procNum);
         $process = $app->getProcess();
-        
+
         if ($process->isRunning()) {
             $this->stdout("Failed: Process is already running\n", Console::FG_RED);
             return;
         }
-        
+
         $this->runApplication($app);
     }
-    
-    public function actionStop()
+
+    public function actionStop($procNum = 0)
     {
-        $app = $this->getApplication();
+        $app = $this->getApplication($procNum);
         $process = $app->getProcess();
-        
+
         if ($process->isRunning()) {
             $this->stdout("Success: Process is stopped\n", Console::FG_GREEN);
         } else {
             $this->stdout("Failed: Process is not stopped\n", Console::FG_RED);
         }
-        
+
         $process->stop();
     }
-    
-    public function actionRestart()
+
+    public function actionRestart($procNum = 0)
     {
-        $app = $this->getApplication();
+        $app = $this->getApplication($procNum);
         $process = $app->getProcess();
-        
+
         if (!$process->isRunning()) {
             $this->stdout("Failed: Process is not running\n", Console::FG_RED);
             return;
         }
-        
+
         unlink($process->getPidFile());
         $process->release();
 
@@ -70,27 +70,27 @@ class GearmanController extends Controller
                 $int = 1000;
             }
         }
-        
+
         $app->setProcess(new Process($app->getConfig(), $app->getLogger()));
         $this->runApplication($app);
     }
-    
+
     public function options($id)
     {
         $options = [];
         if(in_array($id, ['start', 'restart'])) {
             $options = ['fork'];
         }
-        
+
         return array_merge(parent::options($id), $options);
     }
-    
-    protected function getApplication()
+
+    protected function getApplication($procNum)
     {
         $component = Yii::$app->get($this->gearmanComponent);
-        return $component->getApplication();
+        return $component->getApplication($procNum);
     }
-    
+
     protected function runApplication(Application $app)
     {
         $fork = (bool) $this->fork;
@@ -99,7 +99,7 @@ class GearmanController extends Controller
         } else {
             $this->stdout("Success: Process is started, but not daemonized\n", Console::FG_YELLOW);
         }
-        
+
         $app->run((bool) $this->fork);
     }
 }
