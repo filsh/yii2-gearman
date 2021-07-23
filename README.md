@@ -61,12 +61,25 @@ class SyncCalendar extends JobBase
 }
 ```
 
-## Manage workers
+## Manage workers manually
 
 ```cmd
 yii gearman/start --fork=true // start the workers as a daemon and fork proces
 yii gearman/restart --fork=true // restart workers
 yii gearman/stop // stop workers
+```
+
+## Manage workers with Supervisor
+
+This is an example of a Supervisor configuration. It will start three separate instances of the Gearman worker. Add this snippet to your Supervisor configuration file (E.G. /etc/supervisord.conf) and make sure you point it to the correct PHP binary and yii script.
+
+```
+[program:mygearman]
+command=php /path/to/yii gearman/start start %(process_num)s
+process_name=mygearman-%(process_num)s
+numprocs=3
+autostart=true
+autorestart=true
 ```
 
 ## Example using Dispatcher
